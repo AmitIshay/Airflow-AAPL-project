@@ -53,3 +53,9 @@ Tasks Function Module (tasks.py)
 - _get_formatted_csv(path): Searches Minio storage for the formatted CSV file and returns its path.
 
 ![Airflow connections](airflowconf.png)
+![Airflow dag](airflowdag.png)
+![Airflow tasks](airflowtasks.png)
+![Airflow docker](docker.png)
+![Airflow metabase](metabase.png)
+![Airflow minio](minio.png)
+![Airflow slack](slack.png)
