@@ -52,3 +52,4 @@ Tasks Function Module (tasks.py)
 - _store_prices(stock): Saves stock data as JSON to Minio.
 - _get_formatted_csv(path): Searches Minio storage for the formatted CSV file and returns its path.
 
+![Airflow connections](airflowconf.png)
