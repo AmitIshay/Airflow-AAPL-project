@@ -8,22 +8,23 @@ Project Structure
 
 The pipeline consists of two main components:
 
-DAG: Manages the orchestration of tasks, schedules, and notifications.
-Tasks: Defined functions for interacting with external systems, handling data retrieval, processing, and loading.
+1. DAG: Manages the orchestration of tasks, schedules, and notifications.
+2. Tasks: Defined functions for interacting with external systems, handling data retrieval, processing, and loading.
 
 Main Classes and Functions
 ===========================
 
 stock_market DAG:
 
-The DAG is scheduled to run every 4 hours (schedule='0 */4 * * *').
-It uses the SlackNotifier to post success and failure notifications to a Slack channel named social.
-Each task performs specific functions in a sequence, managed by task dependencies.
+- The DAG is scheduled to run every 4 hours (schedule='0 */4 * * *').
+- It uses the SlackNotifier to post success and failure notifications to a Slack channel named social.
+- Each task performs specific functions in a sequence, managed by task dependencies.
+
 Tasks Module: The main tasks include:
 
-_get_stock_prices: Retrieves raw stock data for a specified symbol from the API.
-_store_prices: Saves raw stock data to Minio (an S3-compatible storage).
-_get_formatted_csv: Checks Minio storage for a pre-formatted CSV file and returns the file path.
+- _get_stock_prices: Retrieves raw stock data for a specified symbol from the API.
+- _store_prices: Saves raw stock data to Minio (an S3-compatible storage).
+- _get_formatted_csv: Checks Minio storage for a pre-formatted CSV file and returns the file path.
 
 Prerequisites
 =================================
@@ -50,3 +51,4 @@ Tasks Function Module (tasks.py)
 - _get_stock_prices(url, symbol): Fetches stock prices from the external API.
 - _store_prices(stock): Saves stock data as JSON to Minio.
 - _get_formatted_csv(path): Searches Minio storage for the formatted CSV file and returns its path.
+
