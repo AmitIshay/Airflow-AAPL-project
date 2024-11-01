@@ -1,7 +1,7 @@
 Stock Market Data Pipeline
 ========
 
-This project is an Apache Airflow data pipeline designed to fetch, process, and store stock market data for a given symbol (in this case, AAPL). The pipeline runs every 4 hours, verifying the availability of the stock API, gathering raw data, formatting it, and loading it into a data warehouse.
+This project is an Apache Airflow data pipeline designed to fetch, process, and store stock market data for a given symbol (in this case, AAPL). The pipeline runs every 4 hours, verifying the availability of the stock API (JSON file of AAPL stock), gathering raw data (all the details about AAPL stock from Yahoo Finance), formatting it, and loading it into a data warehouse.
 
 Project Structure
 ================
