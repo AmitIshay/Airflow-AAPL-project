@@ -1,48 +1,52 @@
-Overview
+Stock Market Data Pipeline
 ========
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+This project is an Apache Airflow data pipeline designed to fetch, process, and store stock market data for a given symbol (in this case, AAPL). The pipeline runs every 4 hours, verifying the availability of the stock API, gathering raw data, formatting it, and loading it into a data warehouse.
 
-Project Contents
+Project Structure
 ================
 
-Your Astro project contains the following files and folders:
+The pipeline consists of two main components:
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+DAG: Manages the orchestration of tasks, schedules, and notifications.
+Tasks: Defined functions for interacting with external systems, handling data retrieval, processing, and loading.
 
-Deploy Your Project Locally
+Main Classes and Functions
 ===========================
 
-1. Start Airflow on your local machine by running 'astro dev start'.
+stock_market DAG:
 
-This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
+The DAG is scheduled to run every 4 hours (schedule='0 */4 * * *').
+It uses the SlackNotifier to post success and failure notifications to a Slack channel named social.
+Each task performs specific functions in a sequence, managed by task dependencies.
+Tasks Module: The main tasks include:
 
-- Postgres: Airflow's Metadata Database
-- Webserver: The Airflow component responsible for rendering the Airflow UI
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+_get_stock_prices: Retrieves raw stock data for a specified symbol from the API.
+_store_prices: Saves raw stock data to Minio (an S3-compatible storage).
+_get_formatted_csv: Checks Minio storage for a pre-formatted CSV file and returns the file path.
 
-2. Verify that all 4 Docker containers were created by running 'docker ps'.
-
-Note: Running 'astro dev start' will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
-
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
-
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
-
-Deploy Your Project to Astronomer
+Prerequisites
 =================================
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+- Python: Python 3.7+
+- Docker: Ensure Docker is installed for the DockerOperator.
+- Airflow: Apache Airflow configured locally with Astro CLI.
+- Astronomer CLI: For local development and testing with Airflow.
 
-Contact
+DAG Configuration and Tasks
 =======
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+- is_api_available: Checks if the stock API is available.
+- get_stock_prices: Calls _get_stock_prices to retrieve stock data for a specified symbol.
+- store_prices: Stores the stock data in Minio.
+- format_prices: A DockerOperator task that formats stock data.
+- get_formatted_csv: Verifies the presence of the formatted CSV in Minio.
+- load_to_dw: Loads the formatted CSV data to the data warehouse.
+
+Tasks Function Module (tasks.py)
+=======
+
+- _get_minio_client: Initializes the Minio client for accessing the storage bucket.
+- _get_stock_prices(url, symbol): Fetches stock prices from the external API.
+- _store_prices(stock): Saves stock data as JSON to Minio.
+- _get_formatted_csv(path): Searches Minio storage for the formatted CSV file and returns its path.
